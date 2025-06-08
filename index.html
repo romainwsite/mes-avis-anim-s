@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Animation voiture + témoignages vidéo</title>
 
-  <!-- 1) GSAP + MotionPathPlugin depuis CDN -->
+  <!-- GSAP + MotionPathPlugin depuis un CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/MotionPathPlugin.min.js"></script>
 
@@ -23,10 +23,10 @@
     /* La voiture */
     #car {
       position:absolute; top:0; left:0;
-      width:100px; /* Ajuste la taille si besoin */
+      width:100px; /* Ajuste si nécessaire */
     }
 
-    /* Conteneur et style du lecteur vidéo */
+    /* Conteneur vidéo centré */
     #video-container {
       position:absolute; top:50%; left:50%;
       transform:translate(-50%,-50%);
@@ -45,33 +45,31 @@
     }
   </style>
 </head>
+
 <body>
 
-  <!-- 2) Trajectoire de la voiture : SVG invisible -->
+  <!-- 1) Trajectoire de la voiture (SVG invisible) -->
   <svg>
     <path id="route" d="M100,300 C300,100 500,500 700,300" />
   </svg>
 
-  <!-- 3) La voiture -->
+  <!-- 2) La voiture -->
   <img id="car" src="assets/ma-voiture.png" alt="Voiture">
 
-  <!-- 4) Lecteur vidéo centré -->
+  <!-- 3) Lecteur vidéo centré -->
   <div id="video-container">
-    <video id="testimonial" controls autoplay>
-      <source id="videoSource" src="" type="video/mp4">
-      Votre navigateur ne supporte pas la vidéo.
-    </video>
+    <video id="testimonial" controls autoplay></video>
   </div>
 
-  <!-- 5) Bouton “Suivant” -->
+  <!-- 4) Bouton “Suivant” -->
   <button class="arrow">→ Suivant</button>
 
-  <!-- 6) Script d’animation -->
+  <!-- 5) Script d’animation + gestion des vidéos -->
   <script>
-    // Initialise GSAP
+    // 5.1) Enregistre le plugin
     gsap.registerPlugin(MotionPathPlugin);
 
-    // Chemins vers tes vidéos
+    // 5.2) Ta liste de vidéos
     const videos = [
       'assets/videos/avis1.mp4',
       'assets/videos/avis2.mp4',
@@ -80,15 +78,12 @@
     ];
     let currentIndex = 0;
 
-    // Récupère le player et sa source
+    // 5.3) Sélectionne le player et charge la première vidéo
     const vid = document.getElementById('testimonial');
-    const src = document.getElementById('videoSource');
-
-    // Charge la première vidéo
-    src.src = videos[currentIndex];
+    vid.src = videos[currentIndex];
     vid.load();
 
-    // Crée l’animation de la voiture (en pause au départ)
+    // 5.4) Prépare l'animation de la voiture (en pause)
     const carAnim = gsap.to('#car', {
       duration: 1,
       ease: 'power1.inOut',
@@ -101,16 +96,21 @@
       paused: true
     });
 
-    // Au clic : anime, puis change la vidéo
+    // 5.5) Au clic sur “Suivant” : anime et change la vidéo
     document.querySelector('.arrow').addEventListener('click', e => {
       e.preventDefault();
       carAnim.restart();
       carAnim.eventCallback('onComplete', () => {
         currentIndex = (currentIndex + 1) % videos.length;
-        src.src = videos[currentIndex];
+        vid.src = videos[currentIndex];
         vid.load();
         vid.play();
       });
+    });
+  </script>
+</body>
+</html>
+
     });
   </script>
 </body>
