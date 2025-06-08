@@ -1,7 +1,7 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Animation voiture + témoignages vidéo</title>
 
   <!-- 1) Charger GSAP et MotionPathPlugin depuis CDN -->
@@ -10,79 +10,69 @@
 
   <style>
     /* Reset et styles de base */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin:0; padding:0; box-sizing:border-box; }
     body {
-      background: #000;
-      overflow: hidden;
-      height: 100vh;
-      position: relative;
-      font-family: Arial, sans-serif;
-      color: #fff;
+      background:#000; overflow:hidden;
+      height:100vh; position:relative;
+      font-family:Arial,sans-serif;
+      color:#fff;
     }
-    /* Chemin SVG (invisible à l’écran) */
-    svg { position: absolute; width: 0; height: 0; }
-    #route { fill: none; stroke: transparent; }
+    /* Chemin SVG invisible */
+    svg { position:absolute; width:0; height:0; }
+    #route { fill:none; stroke:transparent; }
 
     /* La voiture */
     #car {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100px;  /* adapte la taille si besoin */
+      position:absolute; top:0; left:0;
+      width:100px; /* ajustable */
     }
 
-    /* Conteneur vidéo */
+    /* Conteneur vidéo centré */
     #video-container {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80%; max-width: 800px;
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      width:80%; max-width:800px;
     }
     #testimonial {
-      width: 100%;
-      display: block;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      width:100%; box-shadow:0 0 20px rgba(0,0,0,0.5);
     }
 
     /* Bouton flèche */
     .arrow {
-      position: absolute;
-      bottom: 20px; right: 20px;
-      padding: 12px 18px;
-      background: #fff;
-      color: #000;
-      border: none;
-      border-radius: 4px;
-      font-size: 18px;
-      cursor: pointer;
-      user-select: none;
+      position:absolute; bottom:20px; right:20px;
+      padding:12px 18px; background:#fff; color:#000;
+      border:none; border-radius:4px;
+      font-size:18px; cursor:pointer;
+      user-select:none;
     }
   </style>
 </head>
 <body>
 
-  <!-- 2) Ta courbe SVG (ajuste le "d" pour la trajectoire) -->
+  <!-- 2) Trajectoire de la voiture dans un SVG invisible -->
   <svg>
-    <path id="route" d="M100,300 C300,100 500,500 700,300"/>
+    <path id="route" d="M100,300 C300,100 500,500 700,300" />
   </svg>
 
   <!-- 3) La voiture -->
-  <img id="car" src="assets/ma-voiture.svg" alt="Voiture">
+  <img id="car" src="assets/ma-voiture.png" alt="Voiture">
 
-  <!-- 4) Le lecteur vidéo -->
+  <!-- 4) Lecteur vidéo -->
   <div id="video-container">
     <video id="testimonial" controls autoplay>
+      <source id="videoSource" src="" type="video/mp4">
       Votre navigateur ne supporte pas la vidéo.
     </video>
   </div>
 
-  <!-- 5) Le bouton pour passer à la vidéo suivante -->
+  <!-- 5) Bouton “Suivant” -->
   <button class="arrow">→ Suivant</button>
 
+  <!-- 6) Script d’animation -->
   <script>
-    // 6) Initialisation GSAP
     gsap.registerPlugin(MotionPathPlugin);
 
-    // 7) Liste des vidéos (dans assets/videos/)
+    // Liste des vidéos (dans assets/videos/)
     const videos = [
       'assets/videos/avis1.mp4',
       'assets/videos/avis2.mp4',
@@ -91,34 +81,39 @@
     ];
     let currentIndex = 0;
 
-    // Charger la première vidéo
+    // Références au player et à sa source
     const vid = document.getElementById('testimonial');
-    vid.src = videos[currentIndex];
+    const src = document.getElementById('videoSource');
 
-    // 8) Créer l'animation de la voiture (paused au début)
-    const carAnim = gsap.to("#car", {
-      duration: 1,               // 1 seconde
-      ease: "power1.inOut",
+    // Charge la première vidéo
+    src.src = videos[currentIndex];
+    vid.load();
+
+    // Prépare l’animation GPS
+    const carAnim = gsap.to('#car', {
+      duration: 1,
+      ease: 'power1.inOut',
       motionPath: {
-        path: "#route",
-        align: "#route",
+        path: '#route',
+        align: '#route',
         alignOrigin: [0.5, 0.5],
         autoRotate: true
       },
       paused: true
     });
 
-    // 9) Au clic sur la flèche : lancer la voiture, puis changer la vidéo
-    document.querySelector(".arrow").addEventListener("click", e => {
+    // Au clic sur la flèche, anime puis change la vidéo
+    document.querySelector('.arrow').addEventListener('click', e => {
       e.preventDefault();
       carAnim.restart();
-      carAnim.eventCallback("onComplete", () => {
+      carAnim.eventCallback('onComplete', () => {
         currentIndex = (currentIndex + 1) % videos.length;
-        vid.src = videos[currentIndex];
+        src.src = videos[currentIndex];
+        vid.load();
         vid.play();
       });
     });
   </script>
 </body>
 </html>
-,
+
